@@ -152,6 +152,10 @@ kbd { background: #000; border: 1px solid rgba(255,255,255,.18); border-radius: 
 .newach .ach small { color: var(--muted); font-size: 12px; }
 
 /* ---- drawer ---- */
+/* The hidden attribute must win over any element's custom display value
+   (e.g. .drawer uses display:grid), or hidden elements stay visible. */
+[hidden] { display: none !important; }
+
 .drawer { position: fixed; inset: 0; background: rgba(0,0,0,.6); display: grid; place-items: end center; z-index: 40; }
 .drawer-panel {
   background: var(--bg2); width: 100%; max-width: 620px; max-height: 86vh; overflow-y: auto;

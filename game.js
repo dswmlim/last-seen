@@ -393,10 +393,19 @@
 
   async function brag(ending) {
     const txt = `I got "${ending.name}" ${ending.emoji} in LAST SEEN (seed ${R.seed}). Endings unlocked: ${Object.keys(P.endings).length}/6. Try to beat my run: `;
+    const full = txt + location.href;
     try {
-      if (navigator.share) await navigator.share({ title: 'LAST SEEN', text: txt, url: location.href });
-      else { await navigator.clipboard.writeText(txt + location.href); toast('Copied your brag 📋'); }
-    } catch (e) {}
+      if (navigator.share) { await navigator.share({ title: 'LAST SEEN', text: txt, url: location.href }); return; }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(full);
+        toast('Copied your brag 📋');
+        return;
+      }
+      throw new Error('no clipboard');
+    } catch (e) {
+      // file:// or blocked clipboard: never leave the button dead — show the text to copy
+      toast('Copy your brag: ' + ending.name + ' ' + ending.emoji);
+    }
   }
 
   // ---------------------------------------------------------------
