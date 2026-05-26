@@ -76,6 +76,38 @@ Every control is keyboard-reachable, choices auto-focus, and there are **high-co
 
 LAST SEEN is intentionally **PG-13, warm, and consent-forward**. The highest-scoring choices are the *emotionally healthy* ones: listening, repairing a misstep, being clear about what you want, and **leaving room for a no**. There's a whole badge (🟢 *Green Flag*) for it. No coercion, no harassment, no explicit content — just the genuinely good feeling of two people figuring out if they click.
 
+The same philosophy drives the **spark-fit mechanic**: when your identity isn't what a character is into, the game *never* treats that as rejection or failure. It simply routes the run toward a warm friendship (the *Incredible Friends* ending), with its own badge — *Friend Energy* 🫶. Attraction shapes the story; it doesn't gate the fun.
+
+---
+
+## 🧑‍🤝‍🧑 Play as you — the spark-fit mechanic
+
+Before each evening, pick who you're **playing as**: a guy (he/him), a girl (she/her), or nonbinary (they/them). Your choice is saved and it genuinely changes the run.
+
+Each character has their own **orientation** — who they're romantically into — surfaced as a badge on the chat header:
+
+- **✨ spark potential** — your identity is their type. Positive **Chemistry** lands with a bonus; romance is on the table.
+- **🤝 friend energy** — not their type romantically. Chemistry is dampened, but that warmth flows into **Vibe**, steering the night toward a genuine friendship instead.
+
+Concretely: with identical choices and the same partner, a **spark fit** might finish around Chemistry 20+, while a **non-match** lands closer to 5 — pushing you out of the romance endings and into *Incredible Friends*. Same kindness, different (equally good) story. Two badges reward exploring this: **Both Sides Now** 🔄 (play as more than one identity) and **Friend Energy** 🫶 (befriend a non-match).
+
+---
+
+## 💌 Meet the cast
+
+Six dateable people, each with pronouns and an orientation that the spark-fit mechanic reads from:
+
+| | Name | Pronouns | Into | Vibe |
+| --- | --- | --- | --- | --- |
+| 🧃 | **Remy** | they/them | everyone | plant-store poet who reads tarot ironically (means it sincerely) |
+| 🎧 | **Sol** | she/her | girls · nonbinary | night-shift DJ; will make you a playlist before a second date |
+| 🛹 | **Theo** | he/him | girls · nonbinary | recovering startup guy learning to bake sourdough badly |
+| 📷 | **Juno** | she/they | everyone | film-camera archivist with opinions about light, none about brunch |
+| 🎸 | **Kit** | he/him | guys · nonbinary | open-mic regular who writes songs about people he met once |
+| 🧗 | **Mara** | she/her | everyone | weekend climber who will out-plan your entire weekend |
+
+The seed picks who texts you, so every identity has plenty of spark-fits *and* plenty of great friends across runs.
+
 ---
 
 ## 🧬 Why it appeals to Gen X / Y / Z
@@ -90,14 +122,15 @@ LAST SEEN is intentionally **PG-13, warm, and consent-forward**. The highest-sco
 
 **Gen Z**
 - Dry, self-aware humor and green-flag values baked into the *winning* path.
-- Shareable seeds + badge brags = built-in "send this to the gc" energy.
+- Play as any identity, date an inclusive cast, and share seeds + badge brags — built-in "send this to the gc" energy.
 
 ---
 
 ## 🗺️ Roadmap
 
 - [ ] Daily seed (everyone plays the same evening each day)
-- [ ] 2 more characters + a "friends only" route expansion
+- [ ] More characters + an explicit "friends only" route expansion
+- [ ] Custom name + a wider set of identity/pronoun options
 - [ ] Choice-history recap on the result screen ("you were brave at the lull")
 - [ ] Export your run as a sharable card (canvas → PNG)
 - [ ] Localization-ready string table
@@ -113,7 +146,7 @@ PRs welcome — the bar is **stay offline, stay kind**.
 3. Keep the tone PG-13 and consent-forward; reward healthy choices.
 4. Test keyboard + reduced-motion + contrast before opening the PR.
 
-Great first issues: write new `BANK` banter lines, add a character, or design a new badge.
+Great first issues: write new `BANK` banter lines, add a character (give them an `into` orientation in `CAST`), add a new identity option in `GENDERS`, or design a new badge.
 
 ---
 
@@ -123,14 +156,15 @@ Great first issues: write new `BANK` banter lines, add a character, or design a 
 - **Banter generator over branching script.** Hard-branching every line explodes writing volume fast. Instead, choices carry a `react` tag (`warm`, `laugh`, `curious`…) and a small templated bank fills the response. Big variety, small word count, easy to extend.
 - **Seeded RNG (mulberry32).** Same seed → same date → same banter order. It makes runs shareable and turns "luck" into something you can hand to a friend. Verified deterministic.
 - **Delayed consequences.** Getting cold feet or doubling down quietly costs you Trust *next* scene, so choices echo instead of resolving instantly — it reads as emotional continuity.
+- **Spark fit without punishment.** Identity matters mechanically — it modulates Chemistry gains in `applyChoice` based on whether the player's gender is in the character's `into` set. The hard rule: a non-match never *subtracts*; it just dampens romance and redirects that point into Vibe, so the worst case is a great friendship, not a worse score. Inclusivity as a system, not a disclaimer.
 - **Healthy = optimal, on purpose.** The math rewards listening, repair, and clarity. The "good ending" isn't a cheat code, it's just being a decent date. That was the whole design thesis.
-- **Balance was tested, not vibed.** A script simulates best/worst/comedy playthroughs and checks that all 6 endings are reachable and every stat combination resolves — no dead ends.
+- **Balance was tested, not vibed.** A script simulates best/worst/comedy playthroughs across identities and checks that all 6 endings are reachable, every stat combination resolves, and the same seed + identity reproduces a run exactly — no dead ends.
 
 ---
 
 ## 📣 Social blurb
 
-> 💬 LAST SEEN — a tiny offline dating sim where you text your way through eight little dates in one evening. Warm, funny, PG-13, green-flags-as-the-meta. Runs in one HTML file, zero dependencies. Share a seed, compare endings. What did you get? 👉 [repo link]
+> 💬 LAST SEEN — a tiny offline dating sim where you text your way through eight little dates in one evening. Play as a guy, a girl, or nonbinary; date an inclusive cast where attraction actually shapes the run (no match just means a great friend). Warm, funny, PG-13, green-flags-as-the-meta. One HTML file, zero dependencies. Share a seed, compare endings. What did you get? 👉 [repo link]
 
 ---
 
