@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#1a1024" />
+  <meta name="description" content="LAST SEEN — a tiny offline texting-sim dating game. Warm, funny, PG-13. No deps, no network." />
+  <title>LAST SEEN — a little texting-sim dating game</title>
+  <link rel="icon" href="data:image/svg+xml,
+    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'>
+      <rect width='32' height='32' rx='7' fill='%231a1024'/>
+      <path d='M16 25s-8-5-8-11a5 5 0 0 1 8-3 5 5 0 0 1 8 3c0 6-8 11-8 11z' fill='%23ff5d8f'/>
+    </svg>" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <a class="skip" href="#view">Skip to game</a>
+
+  <header class="appbar">
+    <button id="homeBtn" class="ghost" type="button" aria-label="Home / title screen">💬 LAST&nbsp;SEEN</button>
+    <div class="appbar-right">
+      <button id="trophyBtn" class="ghost" type="button" aria-label="Open badges and endings">🏅</button>
+      <button id="contrastBtn" class="ghost" type="button" aria-pressed="false">◑ contrast</button>
+      <button id="motionBtn" class="ghost" type="button" aria-pressed="false">🎞️ motion</button>
+      <button id="muteBtn" class="ghost" type="button" aria-pressed="false" aria-label="Toggle sound">🔊</button>
+    </div>
+  </header>
+
+  <div id="meters" class="meters" hidden aria-label="Relationship meters">
+    <div class="meter"><span>✨ Chemistry <b id="mChemV">0</b></span><div class="bar"><i id="mChem"></i></div></div>
+    <div class="meter"><span>🔐 Trust <b id="mTrustV">0</b></span><div class="bar"><i id="mTrust"></i></div></div>
+    <div class="meter"><span>🎭 Vibe <b id="mVibeV">0</b></span><div class="bar"><i id="mVibe"></i></div></div>
+  </div>
+
+  <main id="view" class="view" role="main" aria-live="polite"></main>
+
+  <!-- Trophy / endings drawer -->
+  <div id="drawer" class="drawer" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-label="Badges and endings">
+    <div class="drawer-panel">
+      <div class="drawer-head">
+        <h2>Your collection</h2>
+        <button id="drawerClose" class="ghost" type="button" aria-label="Close">✕</button>
+      </div>
+      <div class="drawer-stats">
+        <span>Runs <b id="statRuns">0</b></span>
+        <span>Endings <b id="statEndings">0/6</b></span>
+        <span>Badges <b id="statAch">0/12</b></span>
+      </div>
+      <h3>Endings</h3>
+      <ul id="endingList" class="grid"></ul>
+      <h3>Badges</h3>
+      <ul id="achList" class="achgrid"></ul>
+    </div>
+  </div>
+
+  <div id="toast" role="status"></div>
+
+  <script src="game.js"></script>
+</body>
+</html>
