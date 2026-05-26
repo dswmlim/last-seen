@@ -37,7 +37,9 @@
   const defaults = {
     muted: false, reduced: false, contrast: false,
     lastSeed: '', bestVibe: 0, runs: 0,
-    endings: {}, achievements: {}, you: { name: 'You', pronouns: 'they/them' }
+    endings: {}, achievements: {},
+    // player identity drives the "spark fit" mechanic (see applyChoice)
+    you: { gender: 'nonbinary' }
   };
   // Safe storage: some browsers throw on localStorage access for file:// (opaque
   // origin) or when cookies/storage are blocked. Fall back to an in-memory store
@@ -102,16 +104,30 @@
 
   // ---------------------------------------------------------------
   // 5. CHARACTERS  (inclusive roster; pronouns respected in text)
+  //    `into` = genders this person is romantically drawn to. Drives the
+  //    "spark fit" mechanic: a match makes Chemistry come easier; a non-match
+  //    isn't a fail — the date leans warm/friendly instead (never punished).
   // ---------------------------------------------------------------
+  const GENDERS = {
+    guy:        { label: 'a guy',        pron: 'he/him',   emoji: '🧑' },
+    girl:       { label: 'a girl',       pron: 'she/her',  emoji: '👩' },
+    nonbinary:  { label: 'nonbinary',    pron: 'they/them', emoji: '🧑\u200d🦱' }
+  };
+  function youGender() { return (P.you && GENDERS[P.you.gender]) ? P.you.gender : 'nonbinary'; }
+
   const CAST = [
     { id: 'remy', name: 'Remy', pron: 'they/them', emoji: '🧃', tag: 'plant-store poet', likes: 'curious', dislikes: 'flat',
-      bio: 'reads tarot ironically, means it sincerely' },
+      into: ['guy', 'girl', 'nonbinary'], bio: 'reads tarot ironically, means it sincerely' },
     { id: 'sol', name: 'Sol', pron: 'she/her', emoji: '🎧', tag: 'night-shift DJ', likes: 'laugh', dislikes: 'cringe',
-      bio: 'will make you a playlist before a second date' },
+      into: ['girl', 'nonbinary'], bio: 'will make you a playlist before a second date' },
     { id: 'theo', name: 'Theo', pron: 'he/him', emoji: '🛹', tag: 'recovering startup guy', likes: 'warm', dislikes: 'flat',
-      bio: 'quit the grind, learning to bake sourdough badly' },
+      into: ['girl', 'nonbinary'], bio: 'quit the grind, learning to bake sourdough badly' },
     { id: 'juno', name: 'Juno', pron: 'she/they', emoji: '📷', tag: 'film-camera archivist', likes: 'curious', dislikes: 'cringe',
-      bio: 'has opinions about light and none about brunch' }
+      into: ['guy', 'girl', 'nonbinary'], bio: 'has opinions about light and none about brunch' },
+    { id: 'kit', name: 'Kit', pron: 'he/him', emoji: '🎸', tag: 'open-mic regular', likes: 'laugh', dislikes: 'flat',
+      into: ['guy', 'nonbinary'], bio: 'writes songs about people he met once' },
+    { id: 'mara', name: 'Mara', pron: 'she/her', emoji: '🧗', tag: 'weekend climber', likes: 'warm', dislikes: 'cringe',
+      into: ['guy', 'girl', 'nonbinary'], bio: 'will absolutely out-plan your whole weekend' }
   ];
 
   // ---------------------------------------------------------------
@@ -194,7 +210,9 @@
     { id: 'maxtrust', name: 'Vault', emoji: '🔐', desc: 'Reach 10+ Trust.' },
     { id: 'soul', name: 'The Good Ending', emoji: '💞', desc: 'Unlock Genuine Connection.' },
     { id: 'collector', name: 'Heartbreak Kid', emoji: '🃏', desc: 'Unlock 4+ different endings.' },
-    { id: 'sampler', name: 'Around the World', emoji: '🌍', desc: 'Date all 4 characters (across runs).' }
+    { id: 'sampler', name: 'Around the World', emoji: '🌍', desc: 'Meet all 6 characters (across runs).' },
+    { id: 'allids', name: 'Both Sides Now', emoji: '🔄', desc: 'Play as more than one identity.' },
+    { id: 'friendzen', name: 'Friend Energy', emoji: '🫶', desc: 'Befriend a non-match (Incredible Friends).' }
   ];
 
   // ---------------------------------------------------------------
@@ -209,8 +227,12 @@
     P.lastSeed = seed; save();
     rng = mulberry32(hashSeed(seed));
     const m = CAST[Math.floor(rand() * CAST.length)];
-    R = { seed, m, i: 0, s: { chem: 0, trust: 0, vibe: 0 }, flags: {}, jokes: 0, log: [], delayed: [] };
+    // "spark fit": does this person date someone of the player's gender?
+    const g = youGender();
+    const fit = !m.into || m.into.indexOf(g) !== -1;
+    R = { seed, m, fit, g, i: 0, s: { chem: 0, trust: 0, vibe: 0 }, flags: {}, jokes: 0, log: [], delayed: [] };
     markCharSeen(m.id);
+    P._ids = P._ids || {}; P._ids[g] = true; save();
     sfx.recv();
     renderScene();
   }
@@ -221,14 +243,24 @@
   }
 
   function applyChoice(c) {
-    R.s.chem += c.chem; R.s.trust += c.trust; R.s.vibe += c.vibe;
+    // Spark fit (gender match) shapes how Chemistry lands:
+    //  - match: positive Chemistry gets a small boost (the spark comes easy)
+    //  - no match: romantic Chemistry is dampened, but that warmth isn't lost —
+    //    it flows into Vibe, steering toward the friendly/"Incredible Friends"
+    //    ending instead. A non-match is never a penalty, just a different path.
+    let dChem = c.chem, dVibe = c.vibe;
+    if (c.chem > 0) {
+      if (R.fit) dChem = c.chem + 1;
+      else { dChem = Math.max(0, c.chem - 1); dVibe = c.vibe + 1; }
+    }
+    R.s.chem += dChem; R.s.trust += c.trust; R.s.vibe += dVibe;
     R.s.chem = Math.max(0, R.s.chem); R.s.trust = Math.max(0, R.s.trust); R.s.vibe = Math.max(0, R.s.vibe);
     if (c.flag) R.flags[c.flag] = true;
     if (c.flag === 'funny' || c.react === 'laugh') R.jokes++;
     // delayed consequence: skittish/stubborn costs trust next scene
     if (c.flag === 'skittish' || c.flag === 'stubborn') R.delayed.push({ when: R.i + 1, trust: -1 });
-    if (c.react === 'good' || c.chem + c.trust + c.vibe >= 3) sfx.good();
-    else if (c.chem + c.trust + c.vibe <= -3) sfx.bad();
+    if (c.react === 'good' || dChem + c.trust + dVibe >= 3) sfx.good();
+    else if (dChem + c.trust + dVibe <= -3) sfx.bad();
     else sfx.send();
   }
 
@@ -246,10 +278,14 @@
 
     const promptText = typeof sc.prompt === 'function' ? sc.prompt(m) : sc.prompt;
     view.innerHTML = '';
+    const fitTag = R.fit
+      ? `<span class="fit spark" title="potential spark">✨ spark potential</span>`
+      : `<span class="fit friend" title="not their type romantically, but a great hang">🤝 friend energy</span>`;
     const head = document.createElement('div');
     head.className = 'thread-head';
     head.innerHTML = `<span class="who">${m.emoji} ${esc(m.name)}</span>
       <span class="pron">${esc(m.pron)}</span>
+      ${fitTag}
       <span class="tagline">${esc(m.tag)}</span>`;
     view.appendChild(head);
 
@@ -345,6 +381,8 @@
     if (s.chem >= 10) grant('maxchem');
     if (s.trust >= 10) grant('maxtrust');
     if (ending.id === 'soulmate') grant('soul');
+    if (ending.id === 'besties' && !R.fit) grant('friendzen');
+    if (P._ids && Object.keys(P._ids).length >= 2) grant('allids');
     if (Object.keys(P.endings).length >= 4) grant('collector');
     if (seenAllChars()) grant('sampler');
     save();
@@ -361,7 +399,7 @@
         <span>🔐 Trust ${s.trust}</span>
         <span>🎭 Vibe ${s.vibe}</span>
       </div>
-      <p class="result-sub">with ${R.m.emoji} ${esc(R.m.name)} · seed <code>${esc(R.seed)}</code></p>
+      <p class="result-sub">you played as ${GENDERS[R.g].emoji} ${esc(GENDERS[R.g].label)} · with ${R.m.emoji} ${esc(R.m.name)} (${R.fit ? 'spark' : 'friend-fit'}) · seed <code>${esc(R.seed)}</code></p>
     `;
     view.appendChild(card);
 
@@ -440,18 +478,41 @@
   // ---------------------------------------------------------------
   function renderTitle() {
     el('meters').hidden = true;
+    const g = youGender();
+    const genderBtns = Object.keys(GENDERS).map(key => {
+      const G = GENDERS[key];
+      const on = key === g;
+      return `<button type="button" class="genopt${on ? ' on' : ''}" data-gender="${key}"
+        role="radio" aria-checked="${on}">${G.emoji} ${esc(G.label)}</button>`;
+    }).join('');
     view.innerHTML = `
       <div class="title reveal">
         <h1>LAST&nbsp;SEEN</h1>
         <p class="subtitle">You're back on the apps. Eight dates, one evening. Who actually clicks?</p>
+        <div class="genrow" role="radiogroup" aria-label="Play as">
+          <span class="genlabel">I'm playing as…</span>
+          <div class="genopts">${genderBtns}</div>
+        </div>
         <div class="seedrow">
           <label for="seedInput">Seed <small>(same seed = same evening)</small></label>
           <input id="seedInput" type="text" placeholder="leave blank for random" autocomplete="off"
             aria-label="Optional run seed" value="${esc(P.lastSeed || '')}" />
         </div>
         <button id="start" class="primary big" type="button">Start the evening →</button>
-        <p class="hint">Reply with <kbd>1</kbd>–<kbd>3</kbd> or tap. It\u2019s warm, a little funny, and on your side.</p>
+        <p class="hint">Reply with <kbd>1</kbd>–<kbd>3</kbd> or tap. Your match's vibe depends on who they\u2019re into \u2014 a non-match just leans toward friendship. It\u2019s warm, a little funny, and on your side.</p>
       </div>`;
+    view.querySelectorAll('.genopt').forEach(b => {
+      b.addEventListener('click', () => {
+        P.you = P.you || {};
+        P.you.gender = b.getAttribute('data-gender');
+        save();
+        view.querySelectorAll('.genopt').forEach(x => {
+          const on = x === b;
+          x.classList.toggle('on', on);
+          x.setAttribute('aria-checked', String(on));
+        });
+      });
+    });
     el('start').addEventListener('click', () => newRun(el('seedInput').value));
     el('seedInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') newRun(el('seedInput').value); });
     refreshTrophies();

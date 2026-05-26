@@ -87,6 +87,9 @@ button:focus-visible, input:focus-visible, .choice:focus-visible { outline: 3px 
 .thread-head .who { font-family: var(--display); font-size: 19px; }
 .thread-head .pron { font-size: 11px; color: var(--teal); background: rgba(84,224,200,.12); padding: 2px 8px; border-radius: 99px; }
 .thread-head .tagline { font-size: 12px; color: var(--muted); font-style: italic; width: 100%; }
+.thread-head .fit { font-size: 11px; padding: 2px 9px; border-radius: 99px; font-weight: 600; }
+.thread-head .fit.spark { color: var(--gold); background: rgba(255,211,110,.14); }
+.thread-head .fit.friend { color: var(--teal); background: rgba(84,224,200,.12); }
 
 .bubble {
   max-width: 84%; padding: 12px 15px; border-radius: var(--radius); line-height: 1.45; font-size: 15px;
@@ -119,6 +122,18 @@ button:focus-visible, input:focus-visible, .choice:focus-visible { outline: 3px 
   text-shadow: 0 0 40px rgba(255,93,143,.25);
 }
 .subtitle { color: var(--muted); max-width: 34ch; line-height: 1.5; margin: 0; }
+.genrow { display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 340px; }
+.genlabel { font-size: 12px; color: var(--muted); text-align: left; }
+.genopts { display: flex; gap: 8px; }
+.genopt {
+  flex: 1; background: var(--panel); color: var(--ink);
+  border: 2px solid rgba(255,255,255,.1); border-radius: 12px; padding: 11px 8px;
+  font-size: 13px; min-height: 48px; transition: transform .08s, border-color .15s, background .15s;
+}
+.genopt:hover { border-color: var(--pink); }
+.genopt:active { transform: translateY(1px); }
+.genopt.on { border-color: var(--pink); background: var(--panel2); box-shadow: 0 0 0 2px rgba(255,93,143,.3); }
+
 .seedrow { display: flex; flex-direction: column; gap: 6px; width: 100%; max-width: 340px; text-align: left; }
 .seedrow label { font-size: 12px; color: var(--muted); }
 .seedrow small { color: var(--teal); }

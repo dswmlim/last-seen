@@ -41,6 +41,8 @@ A match texts you first. Over **eight little scenes** — the opener, the icebre
 
 Where those land (plus the flags you set along the way) decides which of **6 endings** you get, from *Genuine Connection* to *Left on Read*. A full run is **3–8 minutes**. Then you re-roll, because *what if you'd said the brave thing instead.*
 
+**Spark fit:** before you start, choose your identity — a guy, a girl, or nonbinary. Each character has their own orientation, shown as a ✨ *spark potential* or 🤝 *friend energy* badge on the chat header. With a spark fit, Chemistry comes a little easier; without one, that warmth flows into Vibe instead and the evening naturally leans toward a genuine friendship. Either way you're never penalized — it's just a different, equally good story.
+
 ### Controls
 
 | Action | Keyboard | Touch / Mouse |
@@ -59,9 +61,10 @@ Every control is keyboard-reachable, choices auto-focus, and there are **high-co
 
 - 🗨️ **Texting-app feel** — chat bubbles, typing beats, a dusk-toned UI that looks like a phone you'd actually want to open.
 - 🎲 **Seeded runs** — type a seed (or share one) and the *same evening* replays exactly. Great for "no way, watch THIS run."
-- 🌈 **Inclusive by default** — four dateable characters with their own pronouns (they/them, she/her, he/him, she/they), respected in the writing.
+- 🧑‍🤝‍🧑 **Play as you** — pick your identity (a guy, a girl, or nonbinary) and it actually matters: each of the six characters has their own orientation, so who sparks vs. who becomes a great friend shifts with your choice.
+- 🌈 **Inclusive by default** — six dateable characters with their own pronouns and who-they're-into, all respected in the writing. A non-match is never a "fail" — it just leans toward friendship.
 - 💞 **6 endings** — earned from your stats and choices, not luck.
-- 🏅 **12 offline badges** — *Class Clown*, *Green Flag*, *Repair Specialist*, *The Good Ending*, and more.
+- 🏅 **14 offline badges** — *Class Clown*, *Green Flag*, *Both Sides Now*, *Friend Energy*, *The Good Ending*, and more.
 - 🪄 **Banter generator** — templated, tagged dialogue keeps runs feeling fresh without a novel's worth of script.
 - ♿ **Accessible** — keyboard nav, ARIA labels, focus rings, 48px touch targets, contrast + motion toggles.
 - 🔊 **Synth sound** — WebAudio blips, zero audio files, one-tap mute.
