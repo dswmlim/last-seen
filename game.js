@@ -39,8 +39,23 @@
     lastSeed: '', bestVibe: 0, runs: 0,
     endings: {}, achievements: {}, you: { name: 'You', pronouns: 'they/them' }
   };
-  function load() { try { return { ...defaults, ...JSON.parse(localStorage.getItem(KEY) || '{}') }; } catch (e) { return { ...defaults }; } }
-  function save() { try { localStorage.setItem(KEY, JSON.stringify(P)); } catch (e) {} }
+  // Safe storage: some browsers throw on localStorage access for file:// (opaque
+  // origin) or when cookies/storage are blocked. Fall back to an in-memory store
+  // so the game still runs (saves just won't persist between sessions).
+  const mem = {};
+  let storageOK = false;
+  try {
+    const k = '__ls_test__';
+    window.localStorage.setItem(k, '1');
+    window.localStorage.removeItem(k);
+    storageOK = true;
+  } catch (e) { storageOK = false; }
+  const store = {
+    get(key) { try { return storageOK ? window.localStorage.getItem(key) : (key in mem ? mem[key] : null); } catch (e) { return (key in mem) ? mem[key] : null; } },
+    set(key, val) { try { if (storageOK) window.localStorage.setItem(key, val); else mem[key] = val; } catch (e) { mem[key] = val; } }
+  };
+  function load() { try { return { ...defaults, ...JSON.parse(store.get(KEY) || '{}') }; } catch (e) { return { ...defaults }; } }
+  function save() { try { store.set(KEY, JSON.stringify(P)); } catch (e) {} }
   const P = load();
 
   // ---------------------------------------------------------------
@@ -482,7 +497,7 @@
   // 15. BOOT
   // ---------------------------------------------------------------
   function boot() {
-    if (!localStorage.getItem(KEY) && window.matchMedia &&
+    if (!store.get(KEY) && window.matchMedia &&
         window.matchMedia('(prefers-reduced-motion: reduce)').matches) { P.reduced = true; save(); }
     applyBodyFlags();
     bindChrome();
